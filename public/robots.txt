@@ -1,0 +1,5 @@
+# https://http.biz
+User-agent: *
+Allow: /
+
+Sitemap: https://http.biz/sitemap-index.xml
