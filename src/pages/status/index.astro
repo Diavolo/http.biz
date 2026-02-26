@@ -1,0 +1,227 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CategoryIcon from '../../components/CategoryIcon.astro';
+import { getCollection } from 'astro:content';
+
+const allCodes = await getCollection('codes');
+const sorted = allCodes.slice().sort((a, b) => a.data.code - b.data.code);
+
+const classMeta: Record<number, { range: string; name: string; desc: string; color: string }> = {
+  1: { range: '1xx', name: 'Informativos', desc: 'Petición recibida, proceso en curso.', color: 'cyan' },
+  2: { range: '2xx', name: 'Éxito', desc: 'Acción recibida, comprendida y aceptada.', color: 'green' },
+  3: { range: '3xx', name: 'Redirección', desc: 'Se requiere otra acción para completar la petición.', color: 'orange' },
+  4: { range: '4xx', name: 'Error del cliente', desc: 'Sintaxis incorrecta o la petición no puede satisfacerse.', color: 'pink' },
+  5: { range: '5xx', name: 'Error del servidor', desc: 'El servidor no pudo cumplir una petición aparentemente válida.', color: 'purple' },
+};
+
+const bySet = new Map<number, typeof sorted>();
+for (const entry of sorted) {
+  const set = entry.data.set;
+  if (!bySet.has(set)) bySet.set(set, []);
+  bySet.get(set)!.push(entry);
+}
+
+const classes = [1, 2, 3, 4, 5]
+  .filter((set) => bySet.has(set))
+  .map((set) => ({
+    set,
+    ...classMeta[set],
+    codes: (bySet.get(set) ?? []).map((e) => ({ code: e.data.code, name: e.data.title, id: e.id })),
+  }));
+---
+
+<BaseLayout
+  title="Códigos de estado HTTP — http.biz"
+  description="Referencia de códigos de estado HTTP: 1xx, 2xx, 3xx, 4xx, 5xx con nombres y descripciones."
+>
+  <header class="status-header">
+    <a href="/" class="status-header__back">← Inicio</a>
+    <h1 class="status-header__title">Códigos de estado HTTP</h1>
+    <p class="status-header__intro">
+      Respuestas estándar del servidor agrupadas por clase. Cada código indica el resultado de la petición.
+    </p>
+  </header>
+
+  <div class="status-classes">
+    {classes.map((cls) => (
+      <section class={`status-class status-class--${cls.color}`}>
+        <div class="status-class__head">
+          <div class="status-class__range-row">
+            <CategoryIcon set={cls.set as 1 | 2 | 3 | 4 | 5} />
+            <span class="status-class__range">{cls.range}</span>
+          </div>
+          <h2 class="status-class__name">{cls.name}</h2>
+          <p class="status-class__desc">{cls.desc}</p>
+        </div>
+        <ul class="status-class__list">
+          {cls.codes.map((item) => (
+            <li class="status-code">
+              <a href={`/${item.id}/`} class="status-code__link">
+                <span class="status-code__num">{item.code}</span>
+                <span class="status-code__name">{item.name}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .status-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .status-header__back {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+    font-size: var(--text-small);
+    letter-spacing: 0.05em;
+  }
+
+  .status-header__back:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .status-header__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-title);
+    color: var(--accent);
+  }
+
+  .status-header__intro {
+    margin: 0;
+    font-size: var(--text-body);
+    color: var(--fg-secondary);
+    max-width: 42ch;
+  }
+
+  .status-classes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .status-class {
+    border: 1px solid var(--border-default);
+    background: var(--surface-2);
+    padding: var(--space-4);
+  }
+
+  .status-class--cyan {
+    border-left: 3px solid var(--neon-cyan);
+  }
+
+  .status-class--green {
+    border-left: 3px solid var(--semantic-success);
+  }
+
+  .status-class--orange {
+    border-left: 3px solid var(--sun-orange);
+  }
+
+  .status-class--pink {
+    border-left: 3px solid var(--neon-pink);
+  }
+
+  .status-class--purple {
+    border-left: 3px solid var(--neon-purple);
+  }
+
+  .status-class__head {
+    margin-bottom: var(--space-3);
+  }
+
+  .status-class__range-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .status-class__range-row {
+    color: inherit;
+  }
+
+  .status-class--cyan .status-class__range-row { color: var(--neon-cyan); }
+  .status-class--green .status-class__range-row { color: var(--semantic-success); }
+  .status-class--orange .status-class__range-row { color: var(--sun-orange); }
+  .status-class--pink .status-class__range-row { color: var(--neon-pink); }
+  .status-class--purple .status-class__range-row { color: var(--neon-purple); }
+
+  .status-class__range {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .status-class__name {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-lead);
+    color: var(--fg-primary);
+  }
+
+  .status-class__desc {
+    margin: 0;
+    font-size: var(--text-small);
+    color: var(--fg-muted);
+  }
+
+  .status-class__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .status-code {
+    margin: 0;
+    padding: 0;
+    font-size: var(--text-caption);
+  }
+
+  .status-code__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-inset);
+    transition: border-color 0.15s ease, background 0.15s ease;
+    color: inherit;
+  }
+
+  .status-code__link:hover {
+    background: rgba(0, 0, 0, 0.45);
+    border-color: var(--border-default);
+    color: inherit;
+  }
+
+  .status-code__link:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .status-code__num {
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 600;
+    min-width: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .status-class--cyan .status-code__num { color: var(--neon-cyan); text-shadow: 0 0 10px rgba(5, 217, 232, 0.25); }
+  .status-class--green .status-code__num { color: var(--semantic-success); text-shadow: 0 0 10px rgba(0, 255, 159, 0.25); }
+  .status-class--orange .status-code__num { color: var(--sun-orange); text-shadow: 0 0 10px rgba(255, 107, 53, 0.25); }
+  .status-class--pink .status-code__num { color: var(--neon-pink); text-shadow: 0 0 10px rgba(255, 42, 109, 0.25); }
+  .status-class--purple .status-code__num { color: var(--neon-purple); text-shadow: 0 0 10px rgba(211, 0, 197, 0.25); }
+
+  .status-code__name {
+    color: var(--fg-primary);
+    flex: 1;
+  }
+</style>

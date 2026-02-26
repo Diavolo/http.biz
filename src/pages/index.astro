@@ -1,17 +1,229 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="http.biz — Referencia HTTP" description="Referencia y documentación sobre HTTP para desarrolladores. Códigos de estado, métodos, headers y más.">
+  <article class="hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+    <div class="hero__horizon" aria-hidden="true"></div>
+    <h1 class="hero__title">
+      <span class="hero__title-main">http.biz</span>
+      <span class="hero__title-sub">Referencia HTTP</span>
+    </h1>
+    <p class="hero__tagline">
+      Consulta rápida de códigos de estado, métodos y cabeceras HTTP.
+    </p>
+    <div class="hero__actions">
+      <a href="/status/" class="btn btn--primary">
+        Ver códigos HTTP
+      </a>
+    </div>
+  </article>
+
+  <section class="preview-section">
+    <h2 class="preview-section__title">Qué hay aquí</h2>
+    <ul class="preview-list">
+      <li class="preview-list__item">
+        <a href="/status/" class="preview-list__link">
+          <span class="preview-list__code">1xx–5xx</span>
+          <span class="preview-list__label">Códigos de estado HTTP</span>
+        </a>
+      </li>
+      <li class="preview-list__item">
+        <span class="preview-list__code">GET, POST…</span>
+        <span class="preview-list__label">Métodos (próximamente)</span>
+      </li>
+      <li class="preview-list__item">
+        <span class="preview-list__code">Headers</span>
+        <span class="preview-list__label">Referencia de cabeceras (próximamente)</span>
+      </li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: var(--space-8) var(--space-4) var(--space-7);
+    isolation: isolate;
+  }
+
+  .hero__grid {
+    position: absolute;
+    inset: calc(-1 * var(--space-4));
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .hero__horizon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--neon-cyan) 18%,
+      var(--sun-orange) 50%,
+      var(--neon-pink) 82%,
+      transparent 100%
+    );
+    opacity: 0.55;
+    box-shadow:
+      0 0 16px rgba(5, 217, 232, 0.25),
+      0 0 32px rgba(255, 107, 53, 0.2),
+      0 0 48px rgba(247, 37, 133, 0.15);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-display);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+  }
+
+  .hero__title-main {
+    color: var(--accent);
+    text-shadow: var(--glow-cyan);
+  }
+
+  .hero__title-sub {
+    font-size: 0.38em;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--fg-tertiary);
+  }
+
+  .hero__tagline {
+    max-width: 36ch;
+    margin: 0 auto var(--space-5);
+    font-size: var(--text-body);
+    color: var(--fg-secondary);
+    line-height: 1.6;
+  }
+
+  .hero__actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    font-family: 'Orbitron', sans-serif;
+    font-size: var(--text-small);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .btn--primary {
+    color: var(--surface-0);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .btn--primary:hover {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--border-strong);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .btn--primary:active {
+    opacity: 0.9;
+  }
+
+  .preview-section {
+    margin-top: var(--space-6);
+    padding: var(--space-5);
+    border: 1px solid var(--border-default);
+    background: var(--surface-2);
+  }
+
+  .preview-section__title {
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-caption);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .preview-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  .preview-list__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-4);
+    min-width: 140px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-inset);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .preview-list__item:hover {
+    border-color: var(--border-default);
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .preview-list__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    margin: calc(-1 * var(--space-4));
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .preview-list__link:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .preview-list__code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: var(--text-body);
+    color: var(--neon-pink);
+    text-shadow: 0 0 12px rgba(255, 42, 109, 0.22);
+  }
+
+  .preview-list__label {
+    font-size: var(--text-label);
+    color: var(--fg-muted);
+    text-align: center;
+  }
+</style>

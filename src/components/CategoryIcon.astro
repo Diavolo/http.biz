@@ -1,0 +1,25 @@
+---
+import { categoryIcons, type CategorySet } from '../data/categoryIcons';
+
+export interface Props {
+  set: CategorySet;
+  class?: string;
+}
+
+const { set, class: className = '' } = Astro.props;
+const svg = categoryIcons[set] ?? categoryIcons[1];
+---
+
+<span class={`category-icon ${className}`} aria-hidden="true" role="img" set:html={svg} />
+
+<style>
+  .category-icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .category-icon :global(svg) {
+    display: block;
+  }
+</style>

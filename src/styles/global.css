@@ -1,0 +1,288 @@
+/* http.biz — Synthwave / Cyberpunk / Vaporwave. Neon + hacker: paleta neón, gradiente horizonte, mono predominante, glow contenido. Token architecture + craft foundations. */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  /* Base unit — spacing scale: 4 8 12 16 24 32 40 48 */
+  --space-unit: 8px;
+  --space-1: calc(var(--space-unit) * 0.5);
+  --space-2: var(--space-unit);
+  --space-3: calc(var(--space-unit) * 1.5);
+  --space-4: calc(var(--space-unit) * 2);
+  --space-5: calc(var(--space-unit) * 3);
+  --space-6: calc(var(--space-unit) * 4);
+  --space-7: calc(var(--space-unit) * 5);
+  --space-8: calc(var(--space-unit) * 6);
+
+  /* Canvas & surface elevation (dark: higher = slightly lighter) */
+  --surface-0: #0a0a12;
+  --surface-1: rgba(18, 18, 28, 0.95);
+  --surface-2: rgba(24, 24, 36, 0.98);
+  --surface-3: rgba(32, 32, 48, 0.98);
+  --surface-inset: rgba(0, 0, 0, 0.35);
+
+  /* Domain palette — synthwave world */
+  --abyss: #0d0221;
+  --midnight: #16213e;
+  --neon-cyan: #05d9e8;
+  --neon-green: #00ff9f;
+  --neon-pink: #ff2a6d;
+  --neon-purple: #d300c5;
+  --sun-orange: #ff6b35;
+  --sun-pink: #f72585;
+
+  /* Foreground hierarchy (4 levels) */
+  --fg-primary: #e8e8e8;
+  --fg-secondary: #b8c5d0;
+  --fg-tertiary: #7dd3fc;
+  --fg-muted: #5a6572;
+
+  /* Border progression — low opacity, findable but not harsh */
+  --border-default: rgba(5, 217, 232, 0.12);
+  --border-subtle: rgba(5, 217, 232, 0.06);
+  --border-strong: rgba(5, 217, 232, 0.25);
+  --border-focus: rgba(5, 217, 232, 0.5);
+
+  /* Brand accent (primary action, links) */
+  --accent: var(--neon-cyan);
+  --accent-hover: var(--neon-pink);
+
+  /* Semantic (status / code classes) */
+  --semantic-success: var(--neon-green);
+  --semantic-warning: var(--sun-orange);
+  --semantic-error: var(--neon-pink);
+
+  /* Glow — signature, used sparingly */
+  --glow-cyan: 0 0 20px rgba(5, 217, 232, 0.35);
+  --glow-pink: 0 0 20px rgba(255, 42, 109, 0.3);
+
+  /* Background decorative (grid, horizon) — keep signature */
+  --grid-line: rgba(5, 217, 232, 0.06);
+
+  /* Neon whisper — refuerzo sutil en datos/códigos (feel hacker + neon) */
+  --glow-subtle: 0 0 12px currentColor;
+
+  /* Typography scale — legibilidad: body 1rem; jerarquía intacta */
+  --text-display: clamp(2rem, 7vw, 4rem);
+  --text-title: clamp(1.75rem, 5vw, 2.5rem);
+  --text-brand: 1.25rem;
+  --text-lead: 1.125rem;
+  --text-body: 1rem;
+  --text-caption: 0.9375rem;
+  --text-small: 0.875rem;
+  --text-label: 0.8125rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  background: var(--surface-0);
+  color: var(--fg-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Synthwave horizon + grid (signature) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--abyss) 0%, var(--midnight) 35%, transparent 65%),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, var(--grid-line) 2px, var(--grid-line) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, var(--grid-line) 2px, var(--grid-line) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30vh;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 107, 53, 0.08) 25%,
+    rgba(247, 37, 133, 0.2) 60%,
+    rgba(211, 0, 197, 0.12) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--fg-primary);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-shadow: var(--glow-pink);
+}
+
+a:focus-visible {
+  outline: 1px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Skip link — visible solo al recibir foco (teclado / a11y) */
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-small);
+  color: var(--fg-primary);
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: 2px;
+  clip-path: inset(50%);
+  transition: clip-path 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  clip-path: none;
+  outline: 1px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Nav — same base as canvas, border separation; sticky so it stays in view on long pages */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-1);
+  backdrop-filter: blur(10px);
+}
+
+.site-nav__brand {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: var(--text-brand);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-shadow: var(--glow-cyan);
+  display: block;
+  line-height: 0;
+}
+
+.site-nav__brand img {
+  display: block;
+  width: 88px;
+  height: 31px;
+  object-fit: contain;
+}
+
+.site-nav__links {
+  display: flex;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav__links a {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--text-small);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-secondary);
+}
+
+.site-nav__links a:hover {
+  color: var(--accent);
+  text-shadow: var(--glow-cyan);
+}
+
+/* Main */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+/* Footer — subtle separation */
+.site-footer {
+  position: relative;
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-4);
+  text-align: center;
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  background: var(--surface-1);
+}
+
+.site-footer a {
+  color: var(--fg-tertiary);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* Badge 88x31: en móvil debajo del texto del footer, centrado; en escritorio flotante abajo-derecha */
+.site-footer__badge {
+  display: inline-block;
+  margin-top: var(--space-3);
+  line-height: 0;
+}
+
+.site-footer__badge img {
+  display: block;
+  width: 88px;
+  height: 31px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .site-footer__badge {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    margin-top: 0;
+    z-index: 5;
+  }
+}
+
+/* Utilities */
+.glow-cyan { text-shadow: var(--glow-cyan); }
+.glow-pink { text-shadow: var(--glow-pink); }

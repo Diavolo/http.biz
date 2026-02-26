@@ -1,0 +1,338 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryIcon from '../components/CategoryIcon.astro';
+import { getCollection, getEntry, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('codes');
+  return entries.map((entry) => ({ params: { code: entry.id } }));
+}
+
+const { code } = Astro.params;
+if (!code) throw new Error('Missing code param');
+
+const entry = await getEntry('codes', code);
+if (!entry) return Astro.redirect('/404');
+
+const { Content } = await render(entry);
+
+const setToColor: Record<number, string> = {
+  1: 'cyan',
+  2: 'green',
+  3: 'orange',
+  4: 'pink',
+  5: 'purple',
+};
+const setToClassLabel: Record<number, { range: string; name: string }> = {
+  1: { range: '1xx', name: 'Informativos' },
+  2: { range: '2xx', name: 'Éxito' },
+  3: { range: '3xx', name: 'Redirección' },
+  4: { range: '4xx', name: 'Error del cliente' },
+  5: { range: '5xx', name: 'Error del servidor' },
+};
+const colorClass = setToColor[entry.data.set] ?? 'cyan';
+const classLabel = setToClassLabel[entry.data.set] ?? { range: 'xxx', name: '' };
+
+const allCodes = await getCollection('codes');
+const sameClassCodes = allCodes
+  .filter((e) => e.data.set === entry.data.set)
+  .sort((a, b) => a.data.code - b.data.code);
+---
+
+<BaseLayout
+  title={`${entry.data.code} ${entry.data.title} — Códigos HTTP | http.biz`}
+  description={`Código de estado HTTP ${entry.data.code} ${entry.data.title}.`}
+>
+  <div class="detail-layout">
+    <header class="detail-header">
+      <a href="/status/" class="detail-header__back">← Códigos HTTP</a>
+      <p class={`detail-header__class detail-header__class--${colorClass}`} aria-hidden="true">
+        <CategoryIcon set={entry.data.set as 1 | 2 | 3 | 4 | 5} />
+        <span>{classLabel.range} — {classLabel.name}</span>
+      </p>
+      <h1 class={`detail-header__title detail-header__title--${colorClass}`}>
+        <span class="detail-header__code">{entry.data.code}</span>
+        <span class="detail-header__name">{entry.data.title}</span>
+      </h1>
+    </header>
+
+    <article class="detail">
+      <section class="detail-section detail-section--body">
+        <Content />
+      </section>
+
+      {Object.keys(entry.data.references).length > 0 && (
+        <section class="detail-section">
+          <h2 class="detail-section__title">Referencias por lenguaje</h2>
+          <ul class="standards-list">
+            {Object.entries(entry.data.references).map(([name, value]) => (
+              <li>
+                <span class="standards-list__name">{name}</span>
+                <code class="standards-list__value">{value}</code>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </article>
+
+    <aside class="detail-sidebar" aria-label="Códigos de esta clase">
+      <h2 class={`detail-sidebar__title detail-sidebar__title--${colorClass}`}>
+        <CategoryIcon set={entry.data.set as 1 | 2 | 3 | 4 | 5} />
+        <span>{classLabel.range} — {classLabel.name}</span>
+      </h2>
+      <ul class="detail-sidebar__list">
+        {sameClassCodes.map((e) => (
+          <li>
+            <a
+              href={`/${e.id}/`}
+              class={`detail-sidebar__link detail-sidebar__link--${colorClass}`}
+              aria-current={e.id === code ? 'page' : undefined}
+            >
+              <span class="detail-sidebar__code">{e.data.code}</span>
+              <span class="detail-sidebar__name">{e.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .detail-layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .detail-layout {
+      grid-template-columns: 1fr minmax(12rem, 18rem);
+      grid-template-rows: auto 1fr;
+      align-items: start;
+    }
+
+    .detail-header {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .detail {
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .detail {
+      max-width: 52rem;
+    }
+  }
+
+  .detail-header {
+    margin-bottom: var(--space-5);
+  }
+
+  .detail-header__back {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+    font-size: var(--text-small);
+    letter-spacing: 0.05em;
+  }
+
+  .detail-header__back:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .detail-header__class {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-2);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .detail-header__class--cyan { color: var(--neon-cyan); }
+  .detail-header__class--green { color: var(--semantic-success); }
+  .detail-header__class--orange { color: var(--sun-orange); }
+  .detail-header__class--pink { color: var(--neon-pink); }
+  .detail-header__class--purple { color: var(--neon-purple); }
+
+  .detail-header__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    flex-wrap: nowrap;
+    margin: 0;
+    font-size: var(--text-title);
+  }
+
+  @media (max-width: 480px) {
+    .detail-header__title {
+      flex-wrap: wrap;
+    }
+  }
+
+  .detail-header__code {
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 700;
+  }
+
+  .detail-header__title--cyan .detail-header__code { color: var(--neon-cyan); }
+  .detail-header__title--green .detail-header__code { color: var(--semantic-success); }
+  .detail-header__title--orange .detail-header__code { color: var(--sun-orange); }
+  .detail-header__title--pink .detail-header__code { color: var(--neon-pink); }
+  .detail-header__title--purple .detail-header__code { color: var(--neon-purple); }
+
+  .detail-header__name {
+    color: var(--fg-primary);
+    font-weight: 600;
+  }
+
+  .detail-section {
+    margin-bottom: var(--space-5);
+  }
+
+  .detail-section__title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-caption);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .detail-section--body :global(p) {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--fg-primary);
+  }
+
+  .detail-section--body :global(ul),
+  .detail-section--body :global(ol) {
+    margin: 0 0 var(--space-2);
+    padding-left: 1.25rem;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    color: var(--fg-primary);
+  }
+
+  .detail-section--body :global(a) {
+    color: var(--accent);
+  }
+
+  .detail-section--body :global(sup) {
+    font-size: 0.75em;
+  }
+
+  .standards-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .standards-list li {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-caption);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .standards-list__name {
+    color: var(--fg-secondary);
+  }
+
+  .standards-list__value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: var(--text-small);
+    color: var(--fg-tertiary);
+    background: var(--surface-2);
+    padding: 0.125rem 0.375rem;
+    border-radius: 2px;
+  }
+
+  .detail-sidebar {
+    border: 1px solid var(--border-default);
+    background: var(--surface-2);
+    padding: var(--space-4);
+  }
+
+  .detail-sidebar__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: var(--text-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .detail-sidebar__title--cyan { color: var(--neon-cyan); }
+  .detail-sidebar__title--green { color: var(--semantic-success); }
+  .detail-sidebar__title--orange { color: var(--sun-orange); }
+  .detail-sidebar__title--pink { color: var(--neon-pink); }
+  .detail-sidebar__title--purple { color: var(--neon-purple); }
+
+  .detail-sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .detail-sidebar__list li {
+    margin-bottom: var(--space-1);
+  }
+
+  .detail-sidebar__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--text-small);
+    color: inherit;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .detail-sidebar__link:hover {
+    background: var(--surface-inset);
+  }
+
+  .detail-sidebar__link:focus-visible {
+    outline: 1px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .detail-sidebar__link--cyan .detail-sidebar__code { color: var(--neon-cyan); }
+  .detail-sidebar__link--green .detail-sidebar__code { color: var(--semantic-success); }
+  .detail-sidebar__link--orange .detail-sidebar__code { color: var(--sun-orange); }
+  .detail-sidebar__link--pink .detail-sidebar__code { color: var(--neon-pink); }
+  .detail-sidebar__link--purple .detail-sidebar__code { color: var(--neon-purple); }
+
+  .detail-sidebar__code {
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 600;
+    min-width: 2.25rem;
+    flex-shrink: 0;
+  }
+
+  .detail-sidebar__name {
+    color: var(--fg-secondary);
+    flex: 1;
+  }
+
+  .detail-sidebar__link[aria-current="page"] {
+    background: var(--surface-inset);
+  }
+
+  .detail-sidebar__link[aria-current="page"] .detail-sidebar__name {
+    color: var(--fg-primary);
+    font-weight: 600;
+  }
+</style>

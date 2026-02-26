@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** URL canónica absoluta. Por defecto: site + pathname actual. */
+  canonicalURL?: string | URL;
+}
+
+const { title, description = 'http.biz — Referencia y documentación sobre HTTP para desarrolladores.', canonicalURL } = Astro.props;
+
+const site = import.meta.env.SITE;
+const canonical = canonicalURL
+  ? String(canonicalURL)
+  : new URL(Astro.url.pathname, site).href;
+const ogImage = new URL('/88x31-color.gif', site).href;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="canonical" href={canonical} />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <!-- Schema.org WebPage -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: title,
+      description: description,
+      url: canonical,
+      inLanguage: 'es',
+    })} />
+  </head>
+  <body>
+    <div id="app">
+      <a href="#main" class="skip-link">Saltar al contenido</a>
+      <nav class="site-nav" aria-label="Principal">
+        <a href="/" class="site-nav__brand">http.biz</a>
+        <ul class="site-nav__links">
+          <li><a href="/">Inicio</a></li>
+          <li><a href="/status/">Códigos HTTP</a></li>
+        </ul>
+      </nav>
+      <main id="main">
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <p>
+          <a href="/">http.biz</a> — Referencia HTTP
+        </p>
+        <a href="/" class="site-footer__badge" aria-label="http.biz">
+          <img src="/88x31.gif" alt="http.biz" width="88" height="31" />
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>
