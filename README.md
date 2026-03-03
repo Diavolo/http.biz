@@ -1,43 +1,45 @@
-# Astro Starter Kit: Minimal
+## http.biz
 
-```sh
-pnpm create astro@latest -- --template minimal
+Referencia HTTP en español para desarrolladores. Actualmente cubre **~70 códigos de estado** (1xx–5xx), incluyendo códigos no estándar como 444 y 499 (Nginx) o 599.
+
+Sitio estático generado con Astro 5. Dominio: [http.biz](https://http.biz).
+
+---
+
+### Contenido
+
+Los códigos se definen como Markdown en `src/content/codes/` con el siguiente frontmatter (schema en `src/content.config.ts`):
+
+```yaml
+set: 4            # Clase (1–5)
+code: 404
+title: Not Found
+references:       # Opcional: constantes/símbolos por lenguaje/framework
+  Go HTTP Status Constant: http.StatusNotFound
+  Rails HTTP Status Symbol: ":not_found"
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Cada archivo genera una ruta estática `/{code}/` (ej. `/404/`). El campo `references` se muestra como sección aparte en la página de detalle.
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+### Secciones previstas
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+La landing anuncia dos secciones futuras: **métodos HTTP** y **cabeceras**. Todavía no tienen contenido ni rutas.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+---
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Detalles de configuración
 
-Any static assets, like images, can be placed in the `public/` directory.
+- **Sitemap** generado automáticamente (`@astrojs/sitemap`).
+- **Redirect** de `/status-codes/` → `/status/` (ruta legacy).
+- **SEO**: Open Graph, Twitter Cards, Schema.org `WebPage`, canonical URLs.
+- **88x31 badges** en `public/` — guiño retro que se usa en el footer.
 
-## 🧞 Commands
+---
 
-All commands are run from the root of the project, from a terminal:
+### Contribuir
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Mejorar descripciones existentes o añadir matices sobre el uso de cada código.
+- Agregar referencias a constantes/símbolos de distintos lenguajes en el campo `references`.
+- Proponer nuevas secciones (métodos, cabeceras) vía issue o PR.
