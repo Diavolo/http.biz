@@ -6,8 +6,8 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://http.biz',
   integrations: [sitemap()],
+  // Single entry: both `/status-codes` and `/status-codes/` mapped to the same redirect route (Astro 6+).
   redirects: {
-    '/status-codes': '/status',
-    '/status-codes/': '/status/',
+    '/status-codes': '/status/',
   },
 });

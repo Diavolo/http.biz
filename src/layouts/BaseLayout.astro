@@ -40,7 +40,7 @@ const ogImage = new URL('/88x31-color.gif', site).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <!-- Schema.org WebPage -->
-    <script type="application/ld+json" set:html={JSON.stringify({
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
       name: title,
